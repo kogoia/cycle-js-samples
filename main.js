@@ -10,18 +10,27 @@ function main() {
 }
 
 // Effects iImperative)
-function DOMEffect(text$) {
+function DOMDriver(text$) {
     text$.subscribe(text => {
         var container = document.querySelector("#app");
         container.textContent = text;
     });
 }
 
-function consoleLogEffect(msg$) {
+function logDriver(msg$) {
     msg$.subscribe(console.log);
 }
 
-var sinks = main();
+var drivers = {
+    DOM: DOMDriver,
+    Log: logDriver
+}
 
-DOMEffect(sinks.DOM);
-consoleLogEffect(sinks.Log);
+function run(mainFn, drivers) {
+    var sinks = mainFn();
+    Object.keys(drivers).forEach(key => {
+        drivers[key](sinks[key]);
+    });
+}
+
+run(main, drivers);
